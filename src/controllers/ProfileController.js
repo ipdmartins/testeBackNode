@@ -38,6 +38,38 @@ module.exports = {
         })
 
         return response.json({ id, name, avatar, date, publish });
+    },
+
+    async delete(request, response) {
+        const { id } = request.params;
+        const profile = await connection('profile')
+            .where('id', id)
+            .select('id');
+
+        if (profile.id === null) {
+            return response.status(401).json({ error: 'operation not permitted' })
+        }
+        await connection('profile').where('id', id).delete();
+        return response.status(204).json({ answer: "deleted succesfully" });
+    },
+
+    async update(request, response) {
+        const { id } = request.params;
+        const profile = await connection('profile')
+            .where('id', id)
+            .select('id');
+
+        if (profile.id === null) {
+            return response.status(401).json({ error: 'operation not permitted' })
+        }
+        const { name, avatar, date, publish } = request.body;
+
+        await connection('profile').where('id', id).update({
+            name, avatar, date, publish
+        });
+        return response.status(204).json({ answer: "deleted succesfully" });
     }
+
+
 
 }; 

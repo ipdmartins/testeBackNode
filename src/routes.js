@@ -16,4 +16,21 @@ routes.post('/profile', celebrate({//valida primeiro e depois faz inserção
 
 routes.get('/profile', ProfileController.index);
 
+routes.delete('/profile/:id', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+        id: Joi.string().required(),
+    })
+}), ProfileController.delete);
+
+routes.put('/profile/:id', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+        id: Joi.string().required(),
+    }),
+    [Segments.BODY]: Joi.object().keys({
+        name: Joi.string(),
+        avatar: Joi.string(),
+        publish: Joi.string()
+    })
+}), ProfileController.update);
+
 module.exports = routes;
