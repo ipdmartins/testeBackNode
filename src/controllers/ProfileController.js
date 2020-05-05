@@ -1,7 +1,7 @@
 
 const crypto = require('crypto');
-const axios = require('axios');
 const connection = require('../database/connection');
+var fs = require("fs");
 
 module.exports = {
 
@@ -12,20 +12,24 @@ module.exports = {
     },
     //, avatar, date, publish
     async create(request, response) {
-        const { gituser, publish } = request.body;
+        const { name, avatar, publish } = request.body;
 
-        const info = await axios.get(`https://api.github.com/users/${gituser}`);
+        var imageAvatar = {
+            img: fs.readFileSync(avatar),
+            file_name: 'Avatar'
+        };
 
-        //o await vai esperar a conclusão da inserção para só depois dar sequencia
-        const { name: name, avatar_url: avatar } = info.data;
+        var imagePublish = {
+            img: fs.readFileSync(publish),
+            file_name: 'Publication'
+        };
+
+        var userName = name;
 
         let date_ob = new Date();
-
         let day = ("0" + date_ob.getDate()).slice(-2);
-
         // current month
         let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-
         // current year
         let year = date_ob.getFullYear();
         const date = day + "/" + month + "/" + year;
@@ -34,10 +38,10 @@ module.exports = {
         const id = crypto.randomBytes(4).toString('HEX');
 
         await connection('profile').insert({
-            id, name, avatar, date, publish
+            id, userName, imageAvatar, date, imagePublish
         })
 
-        return response.json({ id, name, avatar, date, publish });
+        return response.json({ id, name, date });
     },
 
     async delete(request, response) {
@@ -62,12 +66,12 @@ module.exports = {
         if (profile.id === null) {
             return response.status(401).json({ error: 'operation not permitted' })
         }
-        const { name, avatar, date, publish } = request.body;
+        const { name, imageAvatar, date, imagePublish } = request.body;
 
         await connection('profile').where('id', id).update({
-            name, avatar, date, publish
+            name, imageAvatar, date, imagePublish
         });
-        return response.status(204).json({ answer: "deleted succesfully" });
+        return response.status(204).json({ answer: "updated succesfully" });
     }
 
 

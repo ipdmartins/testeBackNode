@@ -7,8 +7,8 @@ const routes = express.Router();
 
 routes.post('/profile', celebrate({//valida primeiro e depois faz inserção
     [Segments.BODY]: Joi.object().keys({
-        gituser: Joi.string().required(),
-        avatar: Joi.string(),
+        name: Joi.string().required(),
+        avatar: Joi.string().required(),
         date: Joi.date(),
         publish: Joi.string().required()
     })
